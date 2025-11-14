@@ -5,7 +5,7 @@ const getApiBaseUrl = () => {
     return 'http://localhost:5000';
   }
   // In production - will update after deployment
-  return 'https://your-backend-url.onrender.com';
+  return 'https://portfolio-backend-8cps.onrender.com';
 };
 
 const API_BASE_URL = getApiBaseUrl();
