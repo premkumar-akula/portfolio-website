@@ -1,9 +1,14 @@
-// For development
-const DEV_API = 'http://localhost:5000';
-// For production - replace with your actual backend URL after deployment
-const PROD_API = 'https://your-backend-url.onrender.com';
+// Simple API service - works both locally and in production
+const getApiBaseUrl = () => {
+  // In development
+  if (window.location.hostname === 'localhost') {
+    return 'http://localhost:5000';
+  }
+  // In production - will update after deployment
+  return 'https://your-backend-url.onrender.com';
+};
 
-const API_BASE_URL = window.location.hostname === 'localhost' ? DEV_API : PROD_API;
+const API_BASE_URL = getApiBaseUrl();
 
 export const apiService = {
   async submitContact(formData) {
@@ -18,15 +23,13 @@ export const apiService = {
         body: JSON.stringify(formData)
       });
 
-      console.log('Response status:', response.status);
-      
       if (!response.ok) {
         throw new Error(`Server responded with ${response.status}`);
       }
 
       return await response.json();
     } catch (error) {
-      console.error('API Error:', error);
+      console.error('Error:', error);
       throw error;
     }
   },
