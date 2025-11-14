@@ -7,6 +7,7 @@ import Portfolio from './pages/Portfolio';
 import Contact from './pages/Contact';
 import Footer from './components/Footer';
 import backgroundImage from './assets/images/background.png'; // ✅ Import image
+import '@fortawesome/fontawesome-free/css/all.min.css'
 
 function App() {
   return (
