@@ -1,20 +1,9 @@
-// Simple API service - works both locally and in production
-const getApiBaseUrl = () => {
-  // In development
-  if (window.location.hostname === 'localhost') {
-    return 'http://localhost:5000';
-  }
-  // In production - will update after deployment
-  return 'https://portfolio-backend-8cps.onrender.com';
-};
-
-const API_BASE_URL = getApiBaseUrl();
+// Use your EXACT backend URL
+const API_BASE_URL = 'https://portfolio-backend-8cps.onrender.com';
 
 export const apiService = {
   async submitContact(formData) {
     try {
-      console.log('Sending to:', `${API_BASE_URL}/api/contact`);
-      
       const response = await fetch(`${API_BASE_URL}/api/contact`, {
         method: 'POST',
         headers: {
