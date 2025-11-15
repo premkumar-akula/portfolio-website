@@ -11,10 +11,10 @@ const Services = () => {
       delay: '0.1s'
     },
     {
-      icon: 'fas fa-mobile-alt',
-      title: 'App Development',
-      description: 'Designing and developing mobile-friendly applications with focus on user experience and performance. Cross-platform solutions for wider reach and better engagement.',
-      features: ['Cross-Platform', 'User-Centric Design', 'Scalable Architecture', 'Fast Performance'],
+      icon: 'fas fa-chart-line',
+      title: 'Data Analyst',
+      description: 'Transforming raw data into meaningful insights through statistical analysis, visualization, and reporting. Helping businesses make data-driven decisions for growth and optimization.',
+      features: ['Data Visualization', 'Statistical Analysis', 'Business Intelligence', 'Reporting & Dashboards'],
       delay: '0.2s'
     },
     {
