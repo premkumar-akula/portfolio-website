@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime
 import smtplib
-from email.mime.text import MimeText
+from email.mime.text import MIMEText  # ✅ FIXED: MIMEText not MimeText
 import os
 
 app = Flask(__name__)
@@ -13,7 +13,7 @@ print("🚀 Portfolio Backend API Started")
 def send_email_notification(contact_data):
     try:
         # Email configuration (using Gmail)
-        sender_email = "akula.premkumar2611@gmail.com"  # Change to your email
+        sender_email = "premkumarakula8978@gmail.com"  # Your email
         sender_password = os.environ.get('EMAIL_PASSWORD')  # App password
         receiver_email = "akula.premkumar2611@gmail.com"
         
@@ -36,8 +36,8 @@ def send_email_notification(contact_data):
         This email was sent automatically from your portfolio website.
         """
         
-        # Create message
-        message = MimeText(body)
+        # Create message - ✅ FIXED: MIMEText not MimeText
+        message = MIMEText(body)
         message['Subject'] = subject
         message['From'] = sender_email
         message['To'] = receiver_email
