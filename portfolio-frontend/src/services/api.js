@@ -1,7 +1,7 @@
 // EmailJS configuration
-const EMAILJS_SERVICE_ID = 'your_service_id';
-const EMAILJS_TEMPLATE_ID = 'your_template_id';
-const EMAILJS_USER_ID = 'your_public_key';
+const EMAILJS_SERVICE_ID = 'service_o2bcpez';
+const EMAILJS_TEMPLATE_ID = 'template_q935izw';
+const EMAILJS_USER_ID = 'E60_zbcAWv_-fw0XE';
 
 // Load EmailJS script
 const loadEmailJS = () => {
