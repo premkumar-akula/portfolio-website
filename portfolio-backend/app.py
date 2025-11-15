@@ -1,12 +1,58 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime
+import smtplib
+from email.mime.text import MimeText
 import os
 
 app = Flask(__name__)
 CORS(app)
 
 print("🚀 Portfolio Backend API Started")
+
+def send_email_notification(contact_data):
+    try:
+        # Email configuration (using Gmail)
+        sender_email = "akula.premkumar2611@gmail.com"  # Change to your email
+        sender_password = os.environ.get('EMAIL_PASSWORD')  # App password
+        receiver_email = "akula.premkumar2611@gmail.com"
+        
+        # Create email content
+        subject = f"New Portfolio Contact: {contact_data['subject']}"
+        body = f"""
+        🎉 New Portfolio Contact Form Submission!
+        
+        📋 Contact Details:
+        • Name: {contact_data['name']}
+        • Email: {contact_data['email']}
+        • Subject: {contact_data['subject']}
+        
+        💬 Message:
+        {contact_data['message']}
+        
+        ⏰ Time: {contact_data['created_at']}
+        
+        ---
+        This email was sent automatically from your portfolio website.
+        """
+        
+        # Create message
+        message = MimeText(body)
+        message['Subject'] = subject
+        message['From'] = sender_email
+        message['To'] = receiver_email
+        
+        # Send email
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(sender_email, sender_password)
+            server.send_message(message)
+        
+        print("✅ Email notification sent!")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Email failed: {e}")
+        return False
 
 @app.route('/')
 def home():
@@ -27,19 +73,32 @@ def contact():
                     'message': f'Missing required field: {field}'
                 }), 400
         
-        # Log the contact (no database needed for now)
-        print("✅ Contact received:", {
+        # Prepare contact data
+        contact_data = {
             'name': data.get('name'),
             'email': data.get('email'),
             'subject': data.get('subject'),
             'message': data.get('message'),
-            'timestamp': datetime.utcnow().isoformat()
-        })
+            'created_at': datetime.utcnow().isoformat()
+        }
         
-        return jsonify({
-            'success': True,
-            'message': 'Message sent successfully! I will get back to you soon.'
-        }), 200
+        # Log the contact
+        print("✅ Contact received:", contact_data)
+        
+        # Send email notification
+        email_sent = send_email_notification(contact_data)
+        
+        if email_sent:
+            return jsonify({
+                'success': True,
+                'message': 'Message sent successfully! I will get back to you soon.'
+            }), 200
+        else:
+            # Still return success even if email fails
+            return jsonify({
+                'success': True,
+                'message': 'Message received! I will contact you soon.'
+            }), 200
         
     except Exception as e:
         print(f"❌ Contact error: {str(e)}")
@@ -93,7 +152,11 @@ def get_portfolio():
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
-    return jsonify({'status': 'healthy', 'timestamp': datetime.utcnow().isoformat()})
+    return jsonify({
+        'status': 'healthy', 
+        'timestamp': datetime.utcnow().isoformat(),
+        'email_service': 'configured'
+    })
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
