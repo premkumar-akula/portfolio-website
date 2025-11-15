@@ -1,68 +1,12 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime
-import requests
 import os
 
 app = Flask(__name__)
 CORS(app)
 
 print("🚀 Portfolio Backend API Started")
-
-def send_email_notification(contact_data):
-    try:
-        service_id = os.environ.get('EMAILJS_SERVICE_ID')
-        template_id = os.environ.get('EMAILJS_TEMPLATE_ID')  
-        user_id = os.environ.get('EMAILJS_USER_ID')
-        
-        print(f"🔧 Debug - Service ID: {service_id}")
-        print(f"🔧 Debug - Template ID: {template_id}")
-        print(f"🔧 Debug - User ID: {user_id}")
-        
-        # Check if IDs are set
-        if not service_id or service_id == 'your_service_id':
-            print("❌ Service ID not configured")
-            return False
-        if not template_id or template_id == 'your_template_id':
-            print("❌ Template ID not configured") 
-            return False
-        if not user_id or user_id == 'your_user_id':
-            print("❌ User ID not configured")
-            return False
-        
-        data = {
-            'service_id': service_id,
-            'template_id': template_id, 
-            'user_id': user_id,
-            'template_params': {
-                'from_name': contact_data['name'],
-                'from_email': contact_data['email'],
-                'subject': contact_data['subject'],
-                'message': contact_data['message'],
-                'to_email': 'akula.premkumar2611@gmail.com'
-            }
-        }
-        
-        print(f"🔧 Debug - Sending data to EmailJS...")
-        
-        response = requests.post(
-            'https://api.emailjs.com/api/v1.0/email/send',
-            json=data,
-            timeout=10
-        )
-        
-        print(f"🔧 Debug - EmailJS response: {response.status_code}")
-        
-        if response.status_code == 200:
-            print("✅ Email sent via EmailJS!")
-            return True
-        else:
-            print(f"❌ EmailJS failed: {response.status_code} - {response.text}")
-            return False
-            
-    except Exception as e:
-        print(f"❌ Email failed: {e}")
-        return False
 
 @app.route('/')
 def home():
@@ -94,13 +38,6 @@ def contact():
         
         # Log the contact
         print("✅ Contact received:", contact_data)
-        
-        # Send email notification
-        email_sent = send_email_notification(contact_data)
-        if email_sent:
-            print("🎉 Email notification sent successfully!")
-        else:
-            print("⚠️ Email failed but contact was logged")
         
         return jsonify({
             'success': True,
