@@ -1,10 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime
-import smtplib
-from email.mime.text import MIMEText
+import requests
 import os
-import time
 
 app = Flask(__name__)
 CORS(app)
@@ -13,63 +11,44 @@ print("🚀 Portfolio Backend API Started")
 
 def send_email_notification(contact_data):
     try:
-        # Email configuration
-        sender_email = "premkumarakula8978@gmail.com"  # Your Gmail
-        sender_password = os.environ.get('EMAIL_PASSWORD')  # App password
-        receiver_email = "akula.premkumar2611@gmail.com"
+        # EmailJS configuration
+        service_id = os.environ.get('EMAILJS_SERVICE_ID')
+        template_id = os.environ.get('EMAILJS_TEMPLATE_ID')  
+        user_id = os.environ.get('EMAILJS_USER_ID')
         
-        if not sender_password:
-            print("❌ EMAIL_PASSWORD environment variable not set")
+        # Check if EmailJS is configured
+        if not service_id or not template_id or not user_id:
+            print("❌ EmailJS not configured - please set environment variables")
             return False
         
-        # Create email content
-        subject = f"Portfolio Contact: {contact_data['subject']}"
-        body = f"""
-        New contact form submission from your portfolio website:
+        data = {
+            'service_id': service_id,
+            'template_id': template_id, 
+            'user_id': user_id,
+            'template_params': {
+                'from_name': contact_data['name'],
+                'from_email': contact_data['email'],
+                'subject': contact_data['subject'],
+                'message': contact_data['message'],
+                'to_email': 'akula.premkumar2611@gmail.com'
+            }
+        }
         
-        Name: {contact_data['name']}
-        Email: {contact_data['email']}
-        Subject: {contact_data['subject']}
+        response = requests.post(
+            'https://api.emailjs.com/api/v1.0/email/send',
+            json=data,
+            timeout=10
+        )
         
-        Message:
-        {contact_data['message']}
-        
-        Time: {contact_data['created_at']}
-        """
-        
-        # Create message
-        message = MIMEText(body)
-        message['Subject'] = subject
-        message['From'] = sender_email
-        message['To'] = receiver_email
-        
-        # Try different email configurations
-        try:
-            # Method 1: SMTP_SSL (most common)
-            with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=10) as server:
-                server.login(sender_email, sender_password)
-                server.send_message(message)
-            print("✅ Email sent via SMTP_SSL!")
+        if response.status_code == 200:
+            print("✅ Email sent via EmailJS!")
             return True
+        else:
+            print(f"❌ EmailJS failed: {response.status_code}")
+            return False
             
-        except Exception as ssl_error:
-            print(f"SMTP_SSL failed: {ssl_error}")
-            
-            try:
-                # Method 2: STARTTLS
-                with smtplib.SMTP('smtp.gmail.com', 587, timeout=10) as server:
-                    server.starttls()
-                    server.login(sender_email, sender_password)
-                    server.send_message(message)
-                print("✅ Email sent via STARTTLS!")
-                return True
-                
-            except Exception as tls_error:
-                print(f"STARTTLS failed: {tls_error}")
-                return False
-                
     except Exception as e:
-        print(f"❌ Email function error: {e}")
+        print(f"❌ Email failed: {e}")
         return False
 
 @app.route('/')
@@ -103,17 +82,13 @@ def contact():
         # Log the contact
         print("✅ Contact received:", contact_data)
         
-        # Send email notification (non-blocking)
-        try:
-            email_sent = send_email_notification(contact_data)
-            if email_sent:
-                print("🎉 Email notification sent successfully!")
-            else:
-                print("⚠️ Email failed but contact was logged")
-        except Exception as email_error:
-            print(f"⚠️ Email attempt failed: {email_error}")
+        # Send email notification
+        email_sent = send_email_notification(contact_data)
+        if email_sent:
+            print("🎉 Email notification sent successfully!")
+        else:
+            print("⚠️ Email failed but contact was logged")
         
-        # Always return success to user
         return jsonify({
             'success': True,
             'message': 'Message sent successfully! I will get back to you soon.'
