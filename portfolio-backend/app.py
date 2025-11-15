@@ -11,14 +11,23 @@ print("🚀 Portfolio Backend API Started")
 
 def send_email_notification(contact_data):
     try:
-        # EmailJS configuration
         service_id = os.environ.get('EMAILJS_SERVICE_ID')
         template_id = os.environ.get('EMAILJS_TEMPLATE_ID')  
         user_id = os.environ.get('EMAILJS_USER_ID')
         
-        # Check if EmailJS is configured
-        if not service_id or not template_id or not user_id:
-            print("❌ EmailJS not configured - please set environment variables")
+        print(f"🔧 Debug - Service ID: {service_id}")
+        print(f"🔧 Debug - Template ID: {template_id}")
+        print(f"🔧 Debug - User ID: {user_id}")
+        
+        # Check if IDs are set
+        if not service_id or service_id == 'your_service_id':
+            print("❌ Service ID not configured")
+            return False
+        if not template_id or template_id == 'your_template_id':
+            print("❌ Template ID not configured") 
+            return False
+        if not user_id or user_id == 'your_user_id':
+            print("❌ User ID not configured")
             return False
         
         data = {
@@ -34,17 +43,21 @@ def send_email_notification(contact_data):
             }
         }
         
+        print(f"🔧 Debug - Sending data to EmailJS...")
+        
         response = requests.post(
             'https://api.emailjs.com/api/v1.0/email/send',
             json=data,
             timeout=10
         )
         
+        print(f"🔧 Debug - EmailJS response: {response.status_code}")
+        
         if response.status_code == 200:
             print("✅ Email sent via EmailJS!")
             return True
         else:
-            print(f"❌ EmailJS failed: {response.status_code}")
+            print(f"❌ EmailJS failed: {response.status_code} - {response.text}")
             return False
             
     except Exception as e:
