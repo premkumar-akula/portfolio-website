@@ -3,8 +3,8 @@
 Complete full-stack portfolio website with React frontend and Flask backend.
 
 ## 🚀 Live Demo
-- **Frontend:** 
-- **Backend:** 
+- **Frontend: https://portfolio-frontend-xyd8.onrender.com** 
+- **Backend: https://portfolio-backend-8cps.onrender.com** 
 
 ## 📁 Project Structure
 portfolio-website/
